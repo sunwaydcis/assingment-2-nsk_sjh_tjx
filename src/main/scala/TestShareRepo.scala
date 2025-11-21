@@ -1,5 +1,5 @@
 class TestShareRepo {
 
-  
+  object TestSharedRepo
 
 }
