@@ -1,3 +1,5 @@
+import scala.io.Source
+
 object Main {
 
   def loadData(filePath: String): List[Map[String, String]] = {
@@ -17,11 +19,11 @@ object Main {
           
         lines.toList.map { line =>
           val cols = line.split(",").map(_.trim)
-          headers.zipAll(cols, ",").toMap
+          headers.zipAll(cols, ", ").toMap
         }
       }
     } finally {
-      src.colse()
+      src.close()
     }
   }
   
