@@ -21,7 +21,7 @@ def parsePercent(str: String): Double ={
   else safeToDouble(cleaned) / 10.0
 }
 
-def computerEconomyScore(price: Double, discountFraction: Double, profitMargin: Double): Double={
-  val effectivePrice = price * (1.0 + discountFraction)
+def computeEconomyScore(price: Double, discountFraction: Double, profitMargin: Double): Double={
+  val effectivePrice = price * (1.0 - discountFraction)
   effectivePrice * (1.0 + profitMargin)
 }

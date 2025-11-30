@@ -39,7 +39,8 @@ object Main {
     }
 
     val analyses: List[IndicatorAnalysis] = List(
-      new Q1_HighestBookingCountry
+      new Q1_HighestBookingCountry,
+      new Q2_MostEconomicalHotel
     )
 
     analyses.foreach(_.analyze(data))

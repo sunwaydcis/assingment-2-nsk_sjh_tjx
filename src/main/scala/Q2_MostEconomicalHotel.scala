@@ -21,22 +21,22 @@ val validRows = data.filter { row =>
     validRows.groupBy(row => row(HotelNameKey))
 
   val hotelScores: Map[String, Double] =
-    groupedbyHotel.view.mapValues { rows =>
+    groupedByHotel.view.mapValues { rows =>
       val scores = rows.flatMap { row =>
         val priceStr = row.getOrElse(BookingPriceKey, "")
         val discountStr = row.getOrElse(DiscountKey, "")
         val marginStr = row.getOrElse(ProfitMarginKey, "")
 
         val price = safeToDouble(priceStr)
-        val discountFrac = parcePercent(discountStr)
+        val discountFrac = parsePercent(discountStr)
         val profitMargin = safeToDouble(marginStr)
 
         if (price < 0) None
-        else Some(computeEconomyScore price, discountFrac, profitMargin)
+        else Some(computeEconomyScore(price, discountFrac, profitMargin)
       }
 
-      if (scores.isEmpty()) Double.PositiveInfinity
-      else scores.sum / scores.length
+      if (scores.isEmpty) Double.PositiveInfinity
+      else scores.sum / scores.size
     }.toMap
 
     val bestHotelOpt: Option[(String, Double)] =
@@ -53,7 +53,7 @@ val validRows = data.filter { row =>
       println("└─────────────────────────────────────────┘")
   }
 }
-  
+
   private def printResult(hotel: String, score: Double): Unit = {
     println("┌─────────────────────────────────────────┐")
     println("│      ECONOMICAL HOTEL ANALYSIS          │")
