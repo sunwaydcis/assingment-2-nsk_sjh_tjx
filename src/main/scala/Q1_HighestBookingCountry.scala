@@ -31,7 +31,8 @@ class Q1_HighestBookingCountry extends IndicatorAnalysis{
 
     topCountryOpt match{
       case Some((country, count))=>
-        println("Country:$country")
+        println(s"Country: $country")
+        println(s"Number of bookings: $count")
     }
   }
 
