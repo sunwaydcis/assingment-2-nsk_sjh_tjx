@@ -32,7 +32,7 @@ class Q1_HighestBookingCountry extends IndicatorAnalysis {
     println("│        COUNTRY BOOKING ANALYSIS         │")
     println("├─────────────────────────────────────────┤")
     println(f"│  Highest Booking Country : $country%-12s │")
-    println(f"│    Total Number of Bookings : $count%-11d │")
+    println(f"│    Total Number of Bookings : $count%-9d │")
     println("└─────────────────────────────────────────┘")
   }
 
