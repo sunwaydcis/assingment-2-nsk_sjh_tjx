@@ -16,11 +16,13 @@ object Main {
           headerLine.split(",").map(_.trim)
           
         lines.toList.map { line =>
-          val cols = line,split(",").map(_.trim)
+          val cols = line.split(",").map(_.trim)
           headers.zipAll(cols, ",").toMap
         }
       }
-    } 
+    } finally {
+      src.colse()
+    }
   }
 
 }
