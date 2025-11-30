@@ -34,6 +34,12 @@ object Main {
       println("No data found.")
       return
     }
+    
+    val analyses: List[IndicatorAnalysis] = List(
+      new Q1_HighestBookingCountry
+    )
+    
+    analyses.foreach(_.analyze(data))
   }
 
 }
