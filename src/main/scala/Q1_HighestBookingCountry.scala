@@ -15,13 +15,21 @@ class Q1_HighestBookingCountry extends IndicatorAnalysis{
     val grouped: Map[String, List[Map[String, String]]] =
       validRows.groupBy (row => row.getOrElse(DestinationKey, "Unknown"))
 
-    //Count bookings per country
+    // Count bookings per country
 
-    val countrybycountry: Map[String, Int] =
+    val countryByCountry: Map[String, Int] =
       grouped.view.mapValues(_.size).toMap
 
+    // Find country with maximum bookings
+
     val topCountryOpt: Option[(String, Int)] =
-      countrybycountry.maxByOption {case(_. count) => count}
+      countryByCountry.maxByOption {case(_, count) => count}
+
+    // Print result
+
+    println("Country Booking Analysis")
+    
+    
   }
 
 }
