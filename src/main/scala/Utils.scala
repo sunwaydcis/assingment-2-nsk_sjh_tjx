@@ -18,6 +18,10 @@ object Utils {
 def parsePercent(str: String): Double ={
   val cleaned = str.replace("%","").trim
   if (cleaned.isEmpty) 0.0
-  else safeToDouble(cleaned)/10.0
+  else safeToDouble(cleaned) / 10.0
 }
 
+def computerEconomyScore(price: Double, discountFraction: Double, profitMargin: Double): Double={
+  val effectivePrice = price * (1.0 + discountFraction)
+  effectivePrice * (1.0 + profitMargin)
+}
