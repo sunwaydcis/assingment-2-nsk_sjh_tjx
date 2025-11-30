@@ -19,6 +19,9 @@ class Q1_HighestBookingCountry extends IndicatorAnalysis{
 
     val countrybycountry: Map[String, Int] =
       grouped.view.mapValues(_.size).toMap
+
+    val topCountryOpt: Option[(String, Int)] =
+      countrybycountry.maxByOption {case(_. count) => count}
   }
 
 }
