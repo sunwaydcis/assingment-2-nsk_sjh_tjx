@@ -24,5 +24,16 @@ object Main {
       src.colse()
     }
   }
+  
+  def main(args: Array[String]): Unit ={
+    val filePath = "data/Hotel_Dataset.csv"
+    
+    val data = loadData(filePath)
+    
+    if (data.isEmpty) {
+      println("No data found.")
+      return
+    }
+  }
 
 }
