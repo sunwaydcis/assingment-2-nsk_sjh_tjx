@@ -14,3 +14,10 @@ object Utils {
       .maxByOption(_._2)
 
 }
+
+def parsePercent(str: String): Double ={
+  val cleaned = str.replace("%","").trim
+  if (cleaned.isEmpty) 0.0
+  else safeToDouble(cleaned)/10.0
+}
+
