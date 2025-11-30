@@ -1,10 +1,11 @@
 import Utils._
+import IndicatorAnalysis.Row
 
 class Q1_HighestBookingCountry extends IndicatorAnalysis{
 
   private val DestinationKey = "Destination Country"
 
-  override def analyze(data: List[Map[String, String]]): Unit = {
+  override def analyze(data: List[Row]): Unit = {
 
     val destinationCountries =
 
