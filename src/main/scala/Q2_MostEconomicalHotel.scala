@@ -53,3 +53,13 @@ val validRows = data.filter { row =>
       println("└─────────────────────────────────────────┘")
   }
 }
+  
+  private def printResult(hotel: String, score: Double): Unit = {
+    println("┌─────────────────────────────────────────┐")
+    println("│      ECONOMICAL HOTEL ANALYSIS          │")
+    println("├─────────────────────────────────────────┤")
+    println(f"| Most Economical Hotel : $hotel%-18s |")
+    println(f"| Economical Score (lower is better): ${score}%.2f |")
+    println("└─────────────────────────────────────────┘")
+  }
+}
