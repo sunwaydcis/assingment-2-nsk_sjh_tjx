@@ -7,7 +7,7 @@ class Q1_HighestBookingCountry extends IndicatorAnalysis{
   override def analyze(data: List[Map[String, String]]): Unit = {
 
     val destinationCountries =
-      
+
       data.view
         .flatMap(_.get(DestinationKey))
         .filter(_.nonEmpty)
