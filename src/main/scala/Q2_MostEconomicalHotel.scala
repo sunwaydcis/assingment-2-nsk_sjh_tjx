@@ -16,5 +16,24 @@ val validRows = data.filter { row =>
   row.getOrElse(DiscountKey, "").nonEmpty
   row.getOrElse(ProfitMarginKey, "").nonEmpty
 }
-
+  
+  val groupedbyHotel: Map[String, List[Row]] =
+    validRows.groupBy(row => row(HotelNameKey))
+  
+  val hotelScores: Map[String, Double] =
+    groupedbyHotel.view.mapValues { rows =>
+      val scores = rows.flatMap { row =>
+        val priceStr = row.getOrElse(BookingPriceKey, "")
+        val discountStr = row.getOrElse(DiscountKey, "")
+        val marginStr = row.getOrElse(ProfitMarginKey, "")
+        
+        val price = safeToDouble(priceStr)
+        val discountFrac = parcePercent(discountStr)
+        val profitMargin = safeToDouble(marginStr)
+        
+        if (price < 0) None
+        else Some(computeEconomyScore price, discountFrac, profitMargin)
+      }
+    
+    
   
