@@ -29,10 +29,10 @@ class Q1_HighestBookingCountry extends IndicatorAnalysis {
 
   private def printResult(country: String, count: Int): Unit = {
     println("┌─────────────────────────────────────────┐")
-    println("│         COUNTRY BOOKING ANALYSIS        │")
+    println("│        COUNTRY BOOKING ANALYSIS         │")
     println("├─────────────────────────────────────────┤")
-    println(f"│  Highest Booking Country : $country%-15s │")
-    println(f"│  Total Number of Bookings : $count%-6d │")
+    println(f"│  Highest Booking Country : $country%-12s │")
+    println(f"│    Total Number of Bookings : $count%-11d │")
     println("└─────────────────────────────────────────┘")
   }
 
