@@ -5,7 +5,7 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
 
   private val HotelNameKey = "Hotel Name"
   private val VisitorsKey = "No. Of People"
-  private val ProfitMarginKey = "Profit Margin"
+  private val ProfitMarginKey  = "Profit Margin"
 
   override def analyze(data: List[Row]): Unit = {
 
@@ -31,7 +31,6 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
           if (visitors <= 0 || profitMargin.isNaN) None
           else Some(visitors.toDouble * profitMargin)
         }
-        
         if (scores.isEmpty) Double.NegativeInfinity
         else scores.sum
       }.toMap
@@ -40,11 +39,29 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
       hotelScores.maxByOption(_._2)
 
     bestHotelOpt match {
-      case Some((hotel, score))
-        printResult
-      case None 
-        printNoData
+      case Some((hotel, score)) =>
+        printResult(hotel, score)
+      case None =>
+        printNoData()
     }
+  
+}
 
+  private def printNoData(String): Unit = {
+    println("┌─────────────────────────────────────────┐")
+    println("│          PROFITABILITY ANALYSIS        │")
+    println("├─────────────────────────────────────────┤")
+    println("│    No valid hotel data was found.      │")
+    println("└─────────────────────────────────────────┘")
   }
+
+  private def printResult(hotel: String ): Unit = {
+    println("┌─────────────────────────────────────────┐")
+    println("│          PROFITABILITY ANALYSIS        │")
+    println("├─────────────────────────────────────────┤")
+    println(f"│ Most Profitable Hotel : │")
+    println(f"│ Profit Score : $score%8.2f │")
+    println("└─────────────────────────────────────────┘")
+  }
+  
 }
