@@ -4,7 +4,6 @@ import IndicatorAnalysis.Row
 object Main {
 
   def loadData(filePath: String): List[Row] = {
-
     val src = Source.fromFile (filePath, "latin1")
 
     try{
