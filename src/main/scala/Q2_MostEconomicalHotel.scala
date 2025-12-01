@@ -49,20 +49,20 @@ override def analyze(data: List[Row]): Unit = {
     case Some((hotel, score)) =>
       printResult(hotel, score)
     case None =>
-      println("┌─────────────────────────────────────────┐")
-      println("│      ECONOMICAL HOTEL ANALYSIS          │")
-      println("├─────────────────────────────────────────┤")
-      println("│    No valid hotel data was found.       │")
-      println("└─────────────────────────────────────────┘")
+      println("┌─────────────────────────────────────────────┐")
+      println("│          ECONOMICAL HOTEL ANALYSIS          │")
+      println("├─────────────────────────────────────────────┤")
+      println("│        No valid hotel data was found.       │")
+      println("└─────────────────────────────────────────────┘")
   }
 }
 
   private def printResult(hotel: String, score: Double): Unit = {
-    println("┌─────────────────────────────────────────┐")
-    println("│      ECONOMICAL HOTEL ANALYSIS          │")
-    println("├─────────────────────────────────────────┤")
-    println(f"| Most Economical Hotel : $hotel%-18s |")
-    println(f"| Economical Score (lower is better): ${score}%.2f |")
-    println("└─────────────────────────────────────────┘")
+    println("┌─────────────────────────────────────────────────┐")
+    println("│            ECONOMICAL HOTEL ANALYSIS            │")
+    println("├─────────────────────────────────────────────────┤")
+    println(f"│    Most Economical Hotel : $hotel%-18s   │")
+    println(f"│   Economical Score (lower is better): ${score}%.2f    │")
+    println("└─────────────────────────────────────────────────┘")
   }
 }
