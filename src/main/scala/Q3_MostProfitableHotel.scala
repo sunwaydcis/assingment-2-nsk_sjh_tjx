@@ -15,34 +15,26 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
         row.getOrElse(ProfitMarginKey, "").nonEmpty &&
     }
 
-    bestHotelOpt match {
-      case Some((hotel, score)) =>
-        printResult(hotel, score)
-      case None =>
-        printNoData()
+    if (validRows.isEmpty) {
+      printNoData()
+      return
     }
-  }
-
+    
     val hotelScores: Map[String, Double] =
       groupedByHotel.view.mapValues { rows =>
         val scores: List[Double] = rows.flatMap { row =>
           val visitorsStr = row.getOrElse(VisitorsKey, "0")
-          val profitMarginStr = row.getOrElse(ProfitMarginKey, "")
-          val visitors = safeToInt(visitorsStr)
-          val profitMargin = safeToDouble(profitMargin)
+          val profitMarginStr = row.getOrElse(ProfitMarginKey, "0")
+          val visitors     = safeToInt(visitorsStr)
+          val profitMargin = safeToDouble(profitMarginStr)
 
-          if (visitors <= 0 || profitMargin.isNaN)
+          if (visitors <= 0 || profitMargin.isNaN) None
           else Some(visitors.toDouble * profitMargin)
-        }
-      }
+  }
+        if (scores.isEmpty) Double.NegativeInfinity
+        else scores.sum
         
-        private def printNoData(): Unit = {
-          println("┌─────────────────────────────────────────┐")
-          println("│          PROFITABILITY ANALYSIS        │")
-          println("├─────────────────────────────────────────┤")
-          println("│    No valid hotel data was found.      │")
-          println("└─────────────────────────────────────────┘")
-        }
+        
         
         
         
