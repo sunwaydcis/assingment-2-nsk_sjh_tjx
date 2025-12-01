@@ -28,4 +28,7 @@ object Utils {
     val effectivePrice = price * (1.0 - discountFraction)
     effectivePrice * (1.0 + profitMargin)
   }
+
+  def computeProfitScore(visitors: Int, profitMargin: Double): Double =
+    visitors.toDouble * profitMargin
 }
