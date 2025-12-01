@@ -15,12 +15,18 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
         row.getOrElse(ProfitMarginKey, "").nonEmpty
     }
 
-    val groupedByHotel = validRows.groupBy((HotelNameKey))
+    val groupedByHotel: Map[String, List[Row]] =
+      validRows.groupBy(row => row(HotelNameKey))
 
     val hotelScores: Map[String, Double] =
       groupedByHotel.view.mapValues { rows =>
         val scores: List[Double] = rows.flatMap { row =>
           val visitorsStr = row.getOrElse(VisitorsKey, "0")
-          val profitMarginStr = row.getOrElse(ProfitMarginKey, "0")
+          val visitors     = safeToInt(visitorsStr)
+          val profitMargin = safeToDouble(profitMarginStr)
+
+          if (visitors <= 0 || profitMargin.isNaN)
+          else Some(visitors.toDouble * profitMargin)
   }
+        
 }
