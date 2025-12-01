@@ -17,7 +17,6 @@ object Utils {
       .groupMapReduce(identity)(_ => 1)(_ + _)
       .maxByOption(_._2)
 
-
   def parsePercent(str: String): Double = {
     val cleaned = str.replace("%", "").trim
     if (cleaned.isEmpty) 0.0
