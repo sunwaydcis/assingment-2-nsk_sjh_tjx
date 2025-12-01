@@ -19,6 +19,8 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
       printNoData()
       return
     }
+    val groupedByHotel: Map[String, List[Row]] =
+      validRows.groupBy(row => row(HotelNameKey))
 
     val hotelScores: Map[String, Double] =
       groupedByHotel.view.mapValues { rows =>
@@ -29,8 +31,9 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
           val profitMargin = safeToDouble(profitMarginStr)
 
           if (visitors <= 0 || profitMargin.isNaN) None
-          else Some(visitors.toDouble * profitMargin)
+          else Some(computeProfitScore(visitors, profitMargin))
         }
+
         if (scores.isEmpty) Double.NegativeInfinity
         else scores.sum
       }.toMap
@@ -44,10 +47,9 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
       case None =>
         printNoData()
     }
-  
 }
 
-  private def printNoData(String): Unit = {
+  private def printNoData(): Unit = {
     println("┌─────────────────────────────────────────┐")
     println("│          PROFITABILITY ANALYSIS        │")
     println("├─────────────────────────────────────────┤")
@@ -55,13 +57,12 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
     println("└─────────────────────────────────────────┘")
   }
 
-  private def printResult(hotel: String ): Unit = {
+  private def printResult(hotel: String, score: Double): Unit = {
     println("┌─────────────────────────────────────────┐")
     println("│          PROFITABILITY ANALYSIS        │")
     println("├─────────────────────────────────────────┤")
-    println(f"│ Most Profitable Hotel : │")
-    println(f"│ Profit Score : $score%8.2f │")
+    println(f"│ Most Profitable Hotel : $hotel%-18s │")
+    println(f"│ Profit Score (visitors × margin): $score%8.2f │")
     println("└─────────────────────────────────────────┘")
   }
-  
 }
