@@ -1,5 +1,7 @@
 object IndicatorAnalysis {
+
   type Row = Map[String, String]
+
 }
 
 import IndicatorAnalysis.Row
