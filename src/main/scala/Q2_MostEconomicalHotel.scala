@@ -40,14 +40,15 @@ override def analyze(data: List[Row]): Unit = {
     }
 
     scoredView.toMap
-}
+  }
 
-    val bestHotelOpt: Option[(String, Double)] =
-      hotelScores.minByOption(_._2)
+  val bestHotelOpt: Option[(String, Double)] =
+    hotelScores.minByOption(_._2)
 
   bestHotelOpt match {
     case Some((hotel, score)) =>
       printResult(hotel, score)
+
     case None =>
       println("┌─────────────────────────────────────────────┐")
       println("│          ECONOMICAL HOTEL ANALYSIS          │")
@@ -65,4 +66,5 @@ override def analyze(data: List[Row]): Unit = {
     println(f"│   Economical Score (lower is better): ${score}%.2f    │")
     println("└─────────────────────────────────────────────────┘")
   }
+
 }
