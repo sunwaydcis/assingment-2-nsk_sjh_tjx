@@ -63,8 +63,9 @@ override def analyze(data: List[Row]): Unit = {
     println("│            ECONOMICAL HOTEL ANALYSIS            │")
     println("├─────────────────────────────────────────────────┤")
     println(f"│    Most Economical Hotel : $hotel%-18s   │")
-    println(f"│   Economical Score (lower is better): ${score}%.2f    │")
-    println("└─────────────────────────────────────────────────┘")
+    println(f"│    Economical Score : ${score}%.2f                    │")
+    println( "└─────────────────────────────────────────────────┘")
+    println("(Lower score= Lower effective price after discount, which means a more economical option for customers.)")
   }
 
 }
