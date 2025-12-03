@@ -63,12 +63,26 @@ override def analyze(data: List[Row]): Unit = {
     }
   }
 
-  val bestHotelOpt: Option[(String, Double)] =
-    hotelScores.minByOption(_._2)
+  if (hotelMetrics.isEmpty) {
+    printNoData()
+    return
+  }
 
-  bestHotelOpt match {
-    case Some((hotel, score)) =>
-      printResult(hotel, score)
+  val prices = hotelMetrics.values.map(_._1)
+  val discounts = hotelMetrics.values.map(_._2)
+  val margins = hotelMetrics.values.map(_._3)
+  
+  val minPrice = prices.min
+  val maxPrice = prices.max
+  val minDisc = discounts.min
+  val maxDisc = discounts.max
+  val minMarg = margins.min
+  val maxMarg = margins.max
+  
+  def normalize (value: Double, min: Double, max: Double): Double = 
+    if (max == min ) 50.0 else (value-min) / (max-min) * 100.0
+        
+        
 
     case None =>
       println("┌─────────────────────────────────────────────┐")
