@@ -19,16 +19,16 @@ override def analyze(data: List[Row]): Unit = {
       row.getOrElse(PeopleOrRoomsKey, "").nonEmpty
   }
 
-   if (validRows.isEmpty) {
-     printNoData()
-     return
-   }
+  if (validRows.isEmpty) {
+    printNoData()
+    return
+  }
 
   val groupedByHotel: Map[String, List[Row]] =
     validRows.groupBy(row => row(HotelNameKey))
 
   val hotelMetrics: Map[String, (Double, Double, Double)] =
-    groupedByHotel.flatmap{ case (hotel,rows) =>
+    groupedByHotel.flatmap { case (hotel, rows) =>
       val parsed = rows.flatMap { row =>
         val priceStr = row.getOrElse(BookingPriceKey, "")
         val discountStr = row.getOrElse(DiscountKey, "")
@@ -40,7 +40,7 @@ override def analyze(data: List[Row]): Unit = {
         val profitMargin = safeToDouble(marginStr)
         val rooms = safeToInt(roomsStr)
 
-        if (price <= 0 || rooms <=0) None
+        if (price <= 0 || rooms <= 0) None
         else {
           val pricePerRoom = price / rooms.toDouble
           Some((pricePerRoom, discountFrac, profitMargin))
@@ -49,19 +49,19 @@ override def analyze(data: List[Row]): Unit = {
 
       if (parsed.isEmpty) {
         None
-      }  else {
+      } else {
         val count = parsed.size.toDouble
         val sumPrice = parsed.map(_._1).sum
         val sumDiscount = parsed.map(_._2).sum
         val sumMargin = parsed.map(_._3).sum
 
-        val avgPricePerRoom= sumPrice / count
+        val avgPricePerRoom = sumPrice / count
         val avgDiscount = sumDiscount / count
-        val avgMargin = sumMargin/count
-        
+        val avgMargin = sumMargin / count
+
         Some(hotel -> (avgPricePerRoom, avgDiscount, avgMargin))
+      }
     }
-  }
 
   if (hotelMetrics.isEmpty) {
     printNoData()
@@ -71,20 +71,46 @@ override def analyze(data: List[Row]): Unit = {
   val prices = hotelMetrics.values.map(_._1)
   val discounts = hotelMetrics.values.map(_._2)
   val margins = hotelMetrics.values.map(_._3)
-  
+
   val minPrice = prices.min
   val maxPrice = prices.max
   val minDisc = discounts.min
   val maxDisc = discounts.max
   val minMarg = margins.min
   val maxMarg = margins.max
-  
-  def normalize (value: Double, min: Double, max: Double): Double = 
-    if (max == min ) 50.0 else (value-min) / (max-min) * 100.0
-        
-        
 
-    case None =>
+  def normalize(value: Double, min: Double, max: Double): Double =
+    if (max == min) 50.0 else (value - min) / (max - min) * 100.0
+
+    val hotelScores: Map[String, Double] =
+      hotelMetrics.map { case (hotel, (avgPrice, avgDisc, avgMarg)) =>
+
+        val pricePct = normalize(avgPrice, minPrice, maxPrice)
+        val priceScore = 100.0 - pricePct
+
+        val discountPct = normalize(avgDisc, minDisc, maxDisc)
+        val discountScore = discountPct
+
+        val marginPct = normalize(avgMarg, minMarg, maxMarg)
+        val marginScore = 100.0 - marginPct
+
+        val finalScore = (priceScore + discountScore + marginScore) / 3.0
+
+        hotel -> finalScore
+      }
+
+    val bestHotelOpt: Option[(String, Double)] =
+      hotel.Scores.maxByOption(_._2)
+
+    bestHotelOpt match {
+      case Some((hotel, score)) =>
+        printResult(hotel, score)
+      case None =>
+        printNoData()
+    }
+}
+     
+private def printNoData(): Unit = {
       println("┌─────────────────────────────────────────────┐")
       println("│          ECONOMICAL HOTEL ANALYSIS          │")
       println("├─────────────────────────────────────────────┤")
@@ -102,5 +128,3 @@ override def analyze(data: List[Row]): Unit = {
     println( "└─────────────────────────────────────────────────┘")
     println("(Lower score= Lower effective price after discount, which means a more economical option for customers.)")
   }
-
-}
