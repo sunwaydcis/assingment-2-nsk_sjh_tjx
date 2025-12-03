@@ -28,7 +28,7 @@ override def analyze(data: List[Row]): Unit = {
     validRows.groupBy(row => row(HotelNameKey))
 
   val hotelMetrics: Map[String, (Double, Double, Double)] =
-    groupedByHotel.flatmap { case (hotel, rows) =>
+    groupedByHotel.view.flatMap { case (hotel, rows) =>
       val parsed = rows.flatMap { row =>
         val priceStr = row.getOrElse(BookingPriceKey, "")
         val discountStr = row.getOrElse(DiscountKey, "")
@@ -61,7 +61,7 @@ override def analyze(data: List[Row]): Unit = {
 
         Some(hotel -> (avgPricePerRoom, avgDiscount, avgMargin))
       }
-    }
+    }.toMap
 
   if (hotelMetrics.isEmpty) {
     printNoData()
@@ -126,5 +126,5 @@ private def printNoData(): Unit = {
     println(f"│    Most Economical Hotel : $hotel%-18s   │")
     println(f"│    Economical Score : ${score}%.2f                    │")
     println( "└─────────────────────────────────────────────────┘")
-    println("(Lower score= Lower effective price after discount, which means a more economical option for customers.)")
+    println("(Higher Score= More economical overall, combining low price per room, higher discount and lower profit margin)")
   }
