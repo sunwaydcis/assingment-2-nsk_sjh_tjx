@@ -7,6 +7,7 @@ private val HotelNameKey = "Hotel Name"
 private val BookingPriceKey = "Booking Price[SGD]"
 private val DiscountKey = "Discount"
 private val ProfitMarginKey = "Profit Margin"
+private val PeopleOrRoomsKey = "No. Of People"
 
 override def analyze(data: List[Row]): Unit = {
 
@@ -14,32 +15,50 @@ override def analyze(data: List[Row]): Unit = {
     row.getOrElse(HotelNameKey, "").nonEmpty &&
       row.getOrElse(BookingPriceKey, "").nonEmpty &&
       row.getOrElse(DiscountKey, "").nonEmpty &&
-      row.getOrElse(ProfitMarginKey, "").nonEmpty
+      row.getOrElse(ProfitMarginKey, "").nonEmpty &&
+      row.getOrElse(PeopleOrRoomsKey, "").nonEmpty
   }
+
+   if (validRows.isEmpty) {
+     printNoData()
+     return
+   }
 
   val groupedByHotel: Map[String, List[Row]] =
     validRows.groupBy(row => row(HotelNameKey))
 
-  val hotelScores: Map[String, Double] = {
-    val scoredView = groupedByHotel.view.mapValues { rows =>
-      val scores = rows.flatMap { row =>
+  val hotelMetrics: Map[String, (Double, Double, Double)] =
+    groupedByHotel.flatmap{ case (hotel,rows) =>
+      val parsed = rows.flatMap { row =>
         val priceStr = row.getOrElse(BookingPriceKey, "")
         val discountStr = row.getOrElse(DiscountKey, "")
         val marginStr = row.getOrElse(ProfitMarginKey, "")
+        val roomsStr = row.getOrElse(PeopleOrRoomsKey, "")
 
         val price = safeToDouble(priceStr)
         val discountFrac = parsePercent(discountStr)
         val profitMargin = safeToDouble(marginStr)
+        val rooms = safeToInt(roomsStr)
 
-        if (price <= 0) None
-        else Some(computeEconomyScore(price, discountFrac, profitMargin))
+        if (price <= 0 || rooms <=0) None
+        else {
+          val pricePerRoom = price / rooms.toDouble
+          Some((pricePerRoom, discountFrac, profitMargin))
+        }
       }
 
-      if (scores.isEmpty) Double.PositiveInfinity
-      else scores.sum / scores.size
-    }
+      if (parsed.isEmpty) {
+        None
+      }  else {
+        val count = parsed.size.toDouble
+        val sumPrice = parsed.map(_._1).sum
+        val sumDiscount = parsed.map(_._2).sum
+        val sumMargin = parsed.map(_._3).sum
 
-    scoredView.toMap
+        val avgPricePerRoom= sumPrice / count
+        val avgDiscount = sumDiscount / count
+        val avgMargin = sumMargin/count
+    }
   }
 
   val bestHotelOpt: Option[(String, Double)] =
