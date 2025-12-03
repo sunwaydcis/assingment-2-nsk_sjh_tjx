@@ -58,6 +58,8 @@ override def analyze(data: List[Row]): Unit = {
         val avgPricePerRoom= sumPrice / count
         val avgDiscount = sumDiscount / count
         val avgMargin = sumMargin/count
+        
+        Some(hotel -> (avgPricePerRoom, avgDiscount, avgMargin))
     }
   }
 
