@@ -3,13 +3,12 @@ import IndicatorAnalysis.Row
 
 class Q2_MostEconomicalHotel extends IndicatorAnalysis {
 
+  private val CountryKey = "Destination Country"
+  private val CityKey = "Destination City"
   private val HotelNameKey = "Hotel Name"
   private val BookingPriceKey = "Booking Price[SGD]"
   private val DiscountKey = "Discount"
   private val ProfitMarginKey = "Profit Margin"
-  private val PeopleOrRoomsKey = "No. Of People"
-  private val CountryKey = "Country"
-  private val CityKey = "City"
 
   override def analyze(data: List[Row]): Unit = {
 
@@ -19,8 +18,7 @@ class Q2_MostEconomicalHotel extends IndicatorAnalysis {
         row.getOrElse(HotelNameKey, "").nonEmpty &&
         row.getOrElse(BookingPriceKey, "").nonEmpty &&
         row.getOrElse(DiscountKey, "").nonEmpty &&
-        row.getOrElse(ProfitMarginKey, "").nonEmpty &&
-        row.getOrElse(PeopleOrRoomsKey, "").nonEmpty
+        row.getOrElse(ProfitMarginKey, "").nonEmpty
     }
 
     if (validRows.isEmpty) {
@@ -31,25 +29,21 @@ class Q2_MostEconomicalHotel extends IndicatorAnalysis {
 
     val groupedByHotel: Map[(String, String, String), List[Row]] =
       validRows.groupBy(row => (row(CountryKey), row(CityKey), row(HotelNameKey)))
-      
+
     val hotelMetrics: Map[(String, String, String), (Double, Double, Double)] =
         groupedByHotel.view.flatMap { case (key, rows) =>
           val parsed = rows.flatMap { row =>
             val priceStr = row.getOrElse(BookingPriceKey, "")
             val discountStr = row.getOrElse(DiscountKey, "")
             val marginStr = row.getOrElse(ProfitMarginKey, "")
-            val roomsStr = row.getOrElse(PeopleOrRoomsKey, "")
 
             val price = safeToDouble(priceStr)
             val discountFrac = parsePercent(discountStr)
             val profitMargin = safeToDouble(marginStr)
-            val rooms = safeToInt(roomsStr)
 
-            if (price <= 0 || rooms <= 0) None
-            else {
-              val pricePerRoom = price / rooms.toDouble
-              Some((pricePerRoom, discountFrac, profitMargin))
-            }
+            if (price <= 0) None
+            else 
+              Some((price, discountFrac, profitMargin))
           }
 
           if (parsed.isEmpty) {
@@ -103,9 +97,9 @@ class Q2_MostEconomicalHotel extends IndicatorAnalysis {
           key -> finalScore
         }
 
-      val bestHotelOpt: Option[((String, String, String), Double)] = 
+      val bestHotelOpt: Option[((String, String, String), Double)] =
         hotelScores.maxByOption(_._2)
-      
+
 
       bestHotelOpt match {
         case Some(((country, city, hotel), score)) =>
@@ -128,8 +122,10 @@ class Q2_MostEconomicalHotel extends IndicatorAnalysis {
     println("┌─────────────────────────────────────────────────┐")
     println("│            ECONOMICAL HOTEL ANALYSIS            │")
     println("├─────────────────────────────────────────────────┤")
-    println(f"│    Most Economical Hotel : $hotel%-18s   │")
-    println(f"│    Economical Score : ${score}%.2f                    │")
+    println(f"│    Country : $country                               │")
+    println(f"│    City : $city%-20s                  │")
+    println(f"│    Hotel : $hotel%-20s                 │")
+    println(f"│    Economical Score : ${score}%.2f                     │")
     println("└─────────────────────────────────────────────────┘")
     println("(Higher Score= More economical overall, combining low price per room, higher discount and lower profit margin)")
   }
