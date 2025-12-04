@@ -8,11 +8,15 @@ class Q2_MostEconomicalHotel extends IndicatorAnalysis {
   private val DiscountKey = "Discount"
   private val ProfitMarginKey = "Profit Margin"
   private val PeopleOrRoomsKey = "No. Of People"
+  private val CountryKey = "Country"
+  private val CityKey = "City"
 
   override def analyze(data: List[Row]): Unit = {
 
     val validRows = data.filter { row =>
-      row.getOrElse(HotelNameKey, "").nonEmpty &&
+      row.getOrElse(CountryKey, "").nonEmpty &&
+        row.getOrElse(CityKey, "").nonEmpty &&
+        row.getOrElse(HotelNameKey, "").nonEmpty &&
         row.getOrElse(BookingPriceKey, "").nonEmpty &&
         row.getOrElse(DiscountKey, "").nonEmpty &&
         row.getOrElse(ProfitMarginKey, "").nonEmpty &&
@@ -24,68 +28,68 @@ class Q2_MostEconomicalHotel extends IndicatorAnalysis {
       return
     }
 
-    val groupedByHotel: Map[String, List[Row]] =
-      validRows.groupBy(row => row(HotelNameKey))
 
-    val hotelMetrics: Map[String, (Double, Double, Double)] =
-      groupedByHotel.view.flatMap { case (hotel, rows) =>
-        val parsed = rows.flatMap { row =>
-          val priceStr = row.getOrElse(BookingPriceKey, "")
-          val discountStr = row.getOrElse(DiscountKey, "")
-          val marginStr = row.getOrElse(ProfitMarginKey, "")
-          val roomsStr = row.getOrElse(PeopleOrRoomsKey, "")
+    val groupedByHotel: Map[(String, String, String), List[Row]] =
+      validRows.groupBy(row => (row(CountryKey), row(CityKey), row(HotelNameKey)))
+      
+    val hotelMetrics: Map[(String, String, String), (Double, Double, Double)] =
+        groupedByHotel.view.flatMap { case (key, rows) =>
+          val parsed = rows.flatMap { row =>
+            val priceStr = row.getOrElse(BookingPriceKey, "")
+            val discountStr = row.getOrElse(DiscountKey, "")
+            val marginStr = row.getOrElse(ProfitMarginKey, "")
+            val roomsStr = row.getOrElse(PeopleOrRoomsKey, "")
 
-          val price = safeToDouble(priceStr)
-          val discountFrac = parsePercent(discountStr)
-          val profitMargin = safeToDouble(marginStr)
-          val rooms = safeToInt(roomsStr)
+            val price = safeToDouble(priceStr)
+            val discountFrac = parsePercent(discountStr)
+            val profitMargin = safeToDouble(marginStr)
+            val rooms = safeToInt(roomsStr)
 
-          if (price <= 0 || rooms <= 0) None
-          else {
-            val pricePerRoom = price / rooms.toDouble
-            Some((pricePerRoom, discountFrac, profitMargin))
+            if (price <= 0 || rooms <= 0) None
+            else {
+              val pricePerRoom = price / rooms.toDouble
+              Some((pricePerRoom, discountFrac, profitMargin))
+            }
           }
-        }
 
-        if (parsed.isEmpty) {
-          None
-        } else {
-          val count = parsed.size.toDouble
-          val sumPrice = parsed.map(_._1).sum
-          val sumDiscount = parsed.map(_._2).sum
-          val sumMargin = parsed.map(_._3).sum
+          if (parsed.isEmpty) {
+            None
+          } else {
+            val count = parsed.size.toDouble
+            val sumPrice = parsed.map(_._1).sum
+            val sumDiscount = parsed.map(_._2).sum
+            val sumMargin = parsed.map(_._3).sum
 
-          val avgPricePerRoom = sumPrice / count
-          val avgDiscount = sumDiscount / count
-          val avgMargin = sumMargin / count
+            val avgPricePerRoom = sumPrice / count
+            val avgDiscount = sumDiscount / count
+            val avgMargin = sumMargin / count
 
-          Some(hotel -> (avgPricePerRoom, avgDiscount, avgMargin))
-        }
-      }.toMap
+            Some(key -> (avgPricePerRoom, avgDiscount, avgMargin))
+          }
+        }.toMap
 
-    if (hotelMetrics.isEmpty) {
-      printNoData()
-      return
-    }
+      if (hotelMetrics.isEmpty) {
+        printNoData()
+        return
+      }
 
-    val prices = hotelMetrics.values.map(_._1)
-    val discounts = hotelMetrics.values.map(_._2)
-    val margins = hotelMetrics.values.map(_._3)
+      val prices = hotelMetrics.values.map(_._1)
+      val discounts = hotelMetrics.values.map(_._2)
+      val margins = hotelMetrics.values.map(_._3)
 
-    val minPrice = prices.min
-    val maxPrice = prices.max
-    val minDisc = discounts.min
-    val maxDisc = discounts.max
-    val minMarg = margins.min
-    val maxMarg = margins.max
+      val minPrice = prices.min
+      val maxPrice = prices.max
+      val minDisc = discounts.min
+      val maxDisc = discounts.max
+      val minMarg = margins.min
+      val maxMarg = margins.max
 
-    def normalize(value: Double, min: Double, max: Double): Double = {
-      if (max == min) 50.0 else (value - min) / (max - min) * 100.0
-    }
+      def normalize(value: Double, min: Double, max: Double): Double = {
+        if (max == min) 50.0 else (value - min) / (max - min) * 100.0
+      }
 
-      val hotelScores: Map[String, Double] =
-        hotelMetrics.map { case (hotel, (avgPrice, avgDisc, avgMarg)) =>
-
+      val hotelScores: Map[(String, String, String), Double] =
+        hotelMetrics.map { case (key, (avgPrice, avgDisc, avgMarg)) =>
           val pricePct = normalize(avgPrice, minPrice, maxPrice)
           val priceScore = 100.0 - pricePct
 
@@ -96,16 +100,16 @@ class Q2_MostEconomicalHotel extends IndicatorAnalysis {
           val marginScore = 100.0 - marginPct
 
           val finalScore = (priceScore + discountScore + marginScore) / 3.0
-
-          hotel -> finalScore
+          key -> finalScore
         }
 
-      val bestHotelOpt: Option[(String, Double)] =
+      val bestHotelOpt: Option[((String, String, String), Double)] = 
         hotelScores.maxByOption(_._2)
+      
 
       bestHotelOpt match {
-        case Some((hotel, score)) =>
-          printResult(hotel, score)
+        case Some(((country, city, hotel), score)) =>
+          printResult(country, city, hotel, score)
         case None =>
           printNoData()
       }
@@ -120,7 +124,7 @@ class Q2_MostEconomicalHotel extends IndicatorAnalysis {
   }
 
 
-  private def printResult(hotel: String, score: Double): Unit = {
+  private def printResult(country: String, city: String, hotel: String, score: Double): Unit = {
     println("┌─────────────────────────────────────────────────┐")
     println("│            ECONOMICAL HOTEL ANALYSIS            │")
     println("├─────────────────────────────────────────────────┤")
