@@ -93,14 +93,14 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
   }
 
   private def printResult(country: String, city: String, hotel: String, score: Double): Unit = {
-    println("┌────────────────────────────────────────────┐")
-    println("│          PROFITABILITY ANALYSIS            │")
-    println("├────────────────────────────────────────────┤")
-    println(f"│ Hotel Name     : $hotel%-20s              │")
-    println(f"│ Country        : $country%-20s            │")
-    println(f"│ City           : $city%-20s               │")
-    println(f"│ Combined Score : $score%6.2f              │")
-    println("└────────────────────────────────────────────┘")
+    println("┌──────────────────────────────────────┐")
+    println("│       PROFITABILITY ANALYSIS         │")
+    println("├──────────────────────────────────────┤")
+    println(f"│     Hotel Name     : $hotel%-12s    │")
+    println(f"│     Country        : $country%-12s    │")
+    println(f"│     City           : $city%-12s    │")
+    println(f"│     Combined Score : $score%.2f           │")
+    println("└──────────────────────────────────────┘")
     println("(Higher score = more profitable overall based on total visitors and average profit margin)")
   }
 }
