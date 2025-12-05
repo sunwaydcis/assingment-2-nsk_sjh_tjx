@@ -7,7 +7,7 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
   private val CityKey = "Destination City"
   private val HotelNameKey = "Hotel Name"
   private val VisitorsKey = "No. Of People"
-  private val ProfitMarginKey  = "Profit Margin"
+  private val ProfitMarginKey = "Profit Margin"
 
   override def analyze(data: List[Row]): Unit = {
 
@@ -46,7 +46,7 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
           None
         } else {
           val totalVisitors = parsed.map(_._1).sum
-          val avgMargin     = parsed.map(_._2).sum / parsed.size.toDouble
+          val avgMargin = parsed.map(_._2).sum / parsed.size.toDouble
           Some(key -> (totalVisitors, avgMargin))
         }
       }.toMap
@@ -57,20 +57,40 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
     }
 
     val visitorCounts = hotelMetrics.values.map(_._1)
-    val margins       = hotelMetrics.values.map(_._2)
+    val margins = hotelMetrics.values.map(_._2)
 
     val minVisitors = visitorCounts.min
     val maxVisitors = visitorCounts.max
-    val minMargin   = margins.min
-    val maxMargin   = margins.max
+    val minMargin = margins.min
+    val maxMargin = margins.max
 
     def normalize(value: Double, min: Double, max: Double): Double =
       if (max == min) 50.0 else (value - min) / (max - min) * 100.0
 
+      val hotelScores
+      : Map[(String, String, String), Double] =
+        hotelMetrics.map { case (key, (totalVisitors, avgMargin)) =>
+          val visitorsPct = normalize(totalVisitors, minVisitors, maxVisitors)
+          val visitorsScore = visitorsPct
+
+          val marginPct = normalize(avgMargin, minMargin, maxMargin)
+          val marginScore = 100.0 - marginPct
+
+          val combinedScore = (visitorsScore + marginScore) / 2.0
+          key -> combinedScore
+        }
+
+    val bestHotelOpt =
+      hotelScores.maxByOption(_._2)
+
+    bestHotelOpt match {
+      case Some(((country, city, hotel), score)) =>
+        printResult(country, city, hotel, score)
       case None =>
         printNoData()
     }
-}
+  }
+
 
   private def printNoData(): Unit = {
     println("┌─────────────────────────────────────────┐")
@@ -80,12 +100,13 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
     println("└─────────────────────────────────────────┘")
   }
 
-  private def printResult(hotel: String, score: Double): Unit = {
-    println("┌────────────────────────────────────────────────┐")
-    println("│             PROFITABILITY ANALYSIS             │")
-    println("├────────────────────────────────────────────────┤")
-    println(f"│      Most Profitable Hotel : $hotel%-12s      │")
-    println(f"│    Profit Score (visitors × margin): $score%4.2f    │")
+  private def printResult(country: String, city: String, hotel: String, score: Double): Unit = {
+    println("┌───────────────────────────────────────────────┐")
+    println("│ PROFITABILITY ANALYSIS                        │")
+    println("├───────────────────────────────────────────────┤")
+    println(f"│ Hotel Name : $hotel%-20s                 │")
+    println(f"│ Country    : $country%-20s               │")
+    println(f"│ City       : $city%-20s                  │")
     println("└────────────────────────────────────────────────┘")
   }
 
