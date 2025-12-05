@@ -39,12 +39,22 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
           val profitMargin = safeToDouble(profitMarginStr)
 
           if (visitors <= 0 || profitMargin <= 0.0) None
-          else Some(computeProfitScore(visitors, profitMargin))
+          else Some((visitors, profitMargin))
         }
 
-        if (scores.isEmpty) Double.NegativeInfinity
-        else scores.sum
+        if (parsed.isEmpty) {
+          None
+        } else {
+          val totalVisitors = parsed.map(_._1).sum
+          val avgMargin     = parsed.map(_._2).sum / parsed.size.toDouble
+          Some(key -> (totalVisitors, avgMargin))
+        }
       }.toMap
+
+    if (hotelMetrics.isEmpty) {
+      printNoData()
+      return
+    }
 
     val bestHotelOpt: Option[(String, Double)] =
       hotelScores.maxByOption(_._2)
