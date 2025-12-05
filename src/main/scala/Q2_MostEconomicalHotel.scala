@@ -26,7 +26,6 @@ class Q2_MostEconomicalHotel extends IndicatorAnalysis {
       return
     }
 
-
     val groupedByHotel: Map[(String, String, String), List[Row]] =
       validRows.groupBy(row => (row(CountryKey), row(CityKey), row(HotelNameKey)))
 
@@ -116,7 +115,6 @@ class Q2_MostEconomicalHotel extends IndicatorAnalysis {
     println("│        No valid hotel data was found.       │")
     println("└─────────────────────────────────────────────┘")
   }
-
 
   private def printResult(country: String, city: String, hotel: String, score: Double): Unit = {
     println("┌─────────────────────────────────────────────────┐")
