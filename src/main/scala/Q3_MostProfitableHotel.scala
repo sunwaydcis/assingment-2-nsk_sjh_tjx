@@ -3,6 +3,8 @@ import IndicatorAnalysis.Row
 
 class Q3_MostProfitableHotel extends IndicatorAnalysis {
 
+  private val CountryKey = "Destination Country"
+  private val CityKey = "Destination City"
   private val HotelNameKey = "Hotel Name"
   private val VisitorsKey = "No. Of People"
   private val ProfitMarginKey  = "Profit Margin"
@@ -10,7 +12,9 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
   override def analyze(data: List[Row]): Unit = {
 
     val validRows = data.filter { row =>
-      row.getOrElse(HotelNameKey, "").nonEmpty &&
+      row.getOrElse(CountryKey, "").nonEmpty &&
+        row.getOrElse(CityKey, "").nonEmpty &&
+        row.getOrElse(HotelNameKey, "").nonEmpty &&
         row.getOrElse(VisitorsKey, "").nonEmpty &&
         row.getOrElse(ProfitMarginKey, "").nonEmpty
     }
@@ -20,12 +24,14 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
       return
     }
 
-    val groupedByHotel: Map[String, List[Row]] =
-      validRows.groupBy(row => row(HotelNameKey))
+    val groupedByHotel: Map[(String, String, String), List[Row]] =
+      validRows.groupBy(row => (row(CountryKey), row(CityKey), row(HotelNameKey))
+      )
 
-    val hotelScores: Map[String, Double] =
-      groupedByHotel.view.mapValues { rows =>
-        val scores: List[Double] = rows.flatMap { row =>
+    val hotelMetrics
+    : Map[(String, String, String), (Int, Double)] =
+      groupedByHotel.view.flatMap { case (key, rows) =>
+        val parsed = rows.flatMap { row =>
           val visitorsStr = row.getOrElse(VisitorsKey, "0")
           val profitMarginStr = row.getOrElse(ProfitMarginKey, "0")
 
