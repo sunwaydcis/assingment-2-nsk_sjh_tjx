@@ -117,14 +117,14 @@ class Q2_MostEconomicalHotel extends IndicatorAnalysis {
   }
 
   private def printResult(country: String, city: String, hotel: String, score: Double): Unit = {
-    println("┌─────────────────────────────────────────────────┐")
-    println("│            ECONOMICAL HOTEL ANALYSIS            │")
-    println("├─────────────────────────────────────────────────┤")
-    println(f"│    Country : $country                               │")
-    println(f"│    City : $city%-20s                  │")
-    println(f"│    Hotel : $hotel%-20s                 │")
-    println(f"│    Economical Score : ${score}%.2f                     │")
-    println("└─────────────────────────────────────────────────┘")
+    println("┌──────────────────────────────────────────┐")
+    println("│        ECONOMICAL HOTEL ANALYSIS         │")
+    println("├──────────────────────────────────────────┤")
+    println(f"│     Country          : $country              │")
+    println(f"│     City             : $city%-12s      │")
+    println(f"│     Hotel            : $hotel%-12s     │")
+    println(f"│     Economical Score : $score%.2f             │")
+    println("└──────────────────────────────────────────┘")
     println("(Higher Score= More economical overall, combining low price per room, higher discount and lower profit margin)")
   }
 }
