@@ -56,12 +56,16 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
       return
     }
 
-    val bestHotelOpt: Option[(String, Double)] =
-      hotelScores.maxByOption(_._2)
+    val visitorCounts = hotelMetrics.values.map(_._1)
+    val margins       = hotelMetrics.values.map(_._2)
 
-    bestHotelOpt match {
-      case Some((hotel, score)) =>
-        printResult(hotel, score)
+    val minVisitors = visitorCounts.min
+    val maxVisitors = visitorCounts.max
+    val minMargin   = margins.min
+    val maxMargin   = margins.max
+
+    def normalize(value: Double, min: Double, max: Double): Double =
+      if (max == min) 50.0 else (value - min) / (max - min) * 100.0
 
       case None =>
         printNoData()
