@@ -101,5 +101,6 @@ class Q3_MostProfitableHotel extends IndicatorAnalysis {
     println(f"│ City           : $city%-20s               │")
     println(f"│ Combined Score : $score%6.2f              │")
     println("└────────────────────────────────────────────┘")
+    println("(Higher score = more profitable overall based on total visitors and average profit margin)")
   }
 }
