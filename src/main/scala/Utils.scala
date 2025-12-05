@@ -28,6 +28,6 @@ object Utils {
     effectivePrice * (1.0 + profitMargin)
   }
 
-  def computeProfitScore(visitors: Int, profitMargin: Double): Double =
-    visitors.toDouble * profitMargin
+  def computeProfitScore(visitorScore: Double, marginScore: Double): Double =
+    (visitorScore + marginScore) / 2.0
 }
